@@ -61,8 +61,8 @@ public class ApiTest {
 
         OrderDto orderDtoRandom = new OrderDto();
         orderDtoRandom.setCustomerName(generateRandomName());
-        orderDtoRandom.setCustomerPhone(RandomStringUtils.random(10, false, true));
-        orderDtoRandom.setComment(RandomStringUtils.random(5, true, false));
+        orderDtoRandom.setCustomerPhone(generateRandomPhone());
+        orderDtoRandom.setComment(generateRandomComment());
         given()
                 .header("Content-type", "application/json")
                 .body(orderDtoRandom)
@@ -113,8 +113,19 @@ public class ApiTest {
         Assertions.assertTrue(status.contains("OPEN"));
 
     }
-    public String generateRandomName(){
+
+    public String generateRandomName() {
         return RandomStringUtils.random(10, true, false);
 
     }
+
+    public String generateRandomPhone() {
+        return RandomStringUtils.random(10, false, true);
+    }
+
+    public String generateRandomComment() {
+        return RandomStringUtils.random(5, true, false);
+    }
+
 }
+
