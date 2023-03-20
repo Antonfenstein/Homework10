@@ -2,6 +2,9 @@ package dto;
 
 public class OrderDto {
     private String customerName, customerPhone, comment;
+    private String status;
+    private long id;
+    private int courierId;
 
     public OrderDto(String customerName, String customerPhone, String comment) {
         this.customerName = customerName;
@@ -34,5 +37,17 @@ public class OrderDto {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public int getCourierId() {
+        return courierId;
     }
 }
