@@ -1,10 +1,9 @@
 package dto;
 
-public class CredentialsDTO {
-    private String username, password;
+public class Credentials {
+    private String username;
+    private String password;
 
-    public CredentialsDTO() {
-    }
 
     public void setUsername(String username) {
         this.username = username;

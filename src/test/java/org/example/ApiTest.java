@@ -61,17 +61,16 @@ public class ApiTest {
 
     @Test
     public void createOrderAndCheckStatusCode() {
-        OrderDto orderDto = new OrderDto("testname", "1234567", "no");
+//        OrderDto orderDto = new OrderDto("testname", "1234567", "no");
 
-//        OrderDto orderDtoRandom = new OrderDto();
-//        orderDtoRandom.setCustomerName(generateRandomName());
-//        orderDtoRandom.setCustomerPhone(generateRandomPhone());
-//        orderDtoRandom.setComment(generateRandomComment());
+        OrderDto orderDtoRandom = new OrderDto();
+        orderDtoRandom.setCustomerName(generateRandomName());
+        orderDtoRandom.setCustomerPhone(generateRandomPhone());
+        orderDtoRandom.setComment(generateRandomComment());
         Gson gson = new Gson();
-
-       Response response = given()
+        Response response = given()
                 .header("Content-type", "application/json")
-                .body(orderDto)
+                .body(orderDtoRandom)
                 .log()
                 .all()
                 .post("/test-orders")
@@ -79,14 +78,17 @@ public class ApiTest {
                 .log()
                 .all()
                 .extract().response();
-               OrderDto orderDtoReceived = gson.fromJson(response.asString(), OrderDto.class);
 
-               assertEquals(orderDto.getCustomerName(), orderDtoReceived.getCustomerName());
-               assertEquals(orderDto.getCustomerPhone(), orderDtoReceived.getCustomerPhone());
-               assertEquals(orderDto.getComment(), orderDtoReceived.getComment());
+OrderDto orderDtoReceived = gson.fromJson(response.asString(), OrderDto.class);
+
+
+               assertEquals(orderDtoRandom.getCustomerName(), orderDtoReceived.getCustomerName());
+               assertEquals(orderDtoRandom.getCustomerPhone(), orderDtoReceived.getCustomerPhone());
+               assertEquals(orderDtoRandom.getComment(), orderDtoReceived.getComment());
 
                Assertions.assertNotNull(orderDtoReceived.getId());
-//               Assertions.assertNotNull(orderDtoReceived.getStatus());
+               Assertions.assertNotNull(orderDtoReceived.getStatus());
+
 
         assertAll(
                 "Grouped Assertions of User",
