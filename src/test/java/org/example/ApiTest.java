@@ -1,7 +1,7 @@
 package org.example;
 
 import com.google.gson.Gson;
-import dto.OrderDto;
+import dto.OrderTestDto;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -13,7 +13,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.responseSpecification;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -63,14 +62,14 @@ public class ApiTest {
     public void createOrderAndCheckStatusCode() {
 //        OrderDto orderDto = new OrderDto("testname", "1234567", "no");
 
-        OrderDto orderDtoRandom = new OrderDto();
-        orderDtoRandom.setCustomerName(generateRandomName());
-        orderDtoRandom.setCustomerPhone(generateRandomPhone());
-        orderDtoRandom.setComment(generateRandomComment());
+        OrderTestDto orderTestDtoRandom = new OrderTestDto();
+        orderTestDtoRandom.setCustomerName(generateRandomName());
+        orderTestDtoRandom.setCustomerPhone(generateRandomPhone());
+        orderTestDtoRandom.setComment(generateRandomComment());
         Gson gson = new Gson();
         Response response = given()
                 .header("Content-type", "application/json")
-                .body(orderDtoRandom)
+                .body(orderTestDtoRandom)
                 .log()
                 .all()
                 .post("/test-orders")
@@ -79,21 +78,21 @@ public class ApiTest {
                 .all()
                 .extract().response();
 
-OrderDto orderDtoReceived = gson.fromJson(response.asString(), OrderDto.class);
+OrderTestDto orderTestDtoReceived = gson.fromJson(response.asString(), OrderTestDto.class);
 
 
-               assertEquals(orderDtoRandom.getCustomerName(), orderDtoReceived.getCustomerName());
-               assertEquals(orderDtoRandom.getCustomerPhone(), orderDtoReceived.getCustomerPhone());
-               assertEquals(orderDtoRandom.getComment(), orderDtoReceived.getComment());
+               assertEquals(orderTestDtoRandom.getCustomerName(), orderTestDtoReceived.getCustomerName());
+               assertEquals(orderTestDtoRandom.getCustomerPhone(), orderTestDtoReceived.getCustomerPhone());
+               assertEquals(orderTestDtoRandom.getComment(), orderTestDtoReceived.getComment());
 
-               Assertions.assertNotNull(orderDtoReceived.getId());
-               Assertions.assertNotNull(orderDtoReceived.getStatus());
+               Assertions.assertNotNull(orderTestDtoReceived.getId());
+               Assertions.assertNotNull(orderTestDtoReceived.getStatus());
 
 
         assertAll(
                 "Grouped Assertions of User",
-                () -> assertEquals("noo", orderDtoReceived.getComment(), "1 st Assert"),
-                () -> assertEquals("testnamee", orderDtoReceived.getCustomerName(), "2nd Assert")
+                () -> assertEquals("noo", orderTestDtoReceived.getComment(), "1 st Assert"),
+                () -> assertEquals("testnamee", orderTestDtoReceived.getCustomerName(), "2nd Assert")
         );
     }
 

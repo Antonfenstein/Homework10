@@ -1,18 +1,18 @@
 package dto;
 
-public class OrderDto {
+public class OrderTestDto {
     private String customerName, customerPhone, comment;
     private String status;
     private long id;
     private int courierId;
 
-    public OrderDto(String customerName, String customerPhone, String comment) {
+    public OrderTestDto(String customerName, String customerPhone, String comment) {
         this.customerName = customerName;
         this.customerPhone = customerPhone;
         this.comment = comment;
     }
 
-    public OrderDto() {
+    public OrderTestDto() {
     }
 
     public String getCustomerName() {
