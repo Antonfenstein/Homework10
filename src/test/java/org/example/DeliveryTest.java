@@ -6,6 +6,7 @@ import helpers.SetupFunctions;
 import io.restassured.RestAssured;
 import io.restassured.internal.common.assertion.Assertion;
 import io.restassured.response.Response;
+import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,52 @@ public class DeliveryTest {
                 .all()
                 .extract()
                 .response();
+
+    }
+    @Test
+    public void createOrderNoCommentTest() {
+        OrderRealDto orderRealDto = new OrderRealDto("testname", "1234567", "");
+
+        // 1
+        Gson gson = new Gson();
+
+
+        // 2
+        given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .body(gson.toJson(orderRealDto))
+                .log()
+                .all()
+                .post("/orders")
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK);
+
+    }
+    @Test
+    public void createOrderNoTokenTest() {
+        OrderRealDto orderRealDto = new OrderRealDto("testname", "1234567", "");
+
+        // 1
+        Gson gson = new Gson();
+
+
+        // 2
+        given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer ")
+                .body(gson.toJson(orderRealDto))
+                .log()
+                .all()
+                .post("/orders")
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(HttpStatus.SC_UNAUTHORIZED);
 
     }
 
