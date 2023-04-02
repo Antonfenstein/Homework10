@@ -1,11 +1,13 @@
 package org.example;
 
 import com.google.gson.Gson;
+import dto.CourierCreationDto;
 import dto.OrderRealDto;
 import helpers.SetupFunctions;
 import io.restassured.RestAssured;
 import io.restassured.internal.common.assertion.Assertion;
 import io.restassured.response.Response;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -50,10 +52,13 @@ public class DeliveryTest {
                 .then()
                 .log()
                 .all()
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
 
     }
+
     @Test
     public void createOrderNoCommentTest() {
         OrderRealDto orderRealDto = new OrderRealDto("testname", "1234567", "");
@@ -77,6 +82,7 @@ public class DeliveryTest {
                 .statusCode(HttpStatus.SC_OK);
 
     }
+
     @Test
     public void createOrderNoTokenTest() {
         OrderRealDto orderRealDto = new OrderRealDto("testname", "1234567", "");
@@ -115,7 +121,7 @@ public class DeliveryTest {
                 .log()
                 .all()
                 .assertThat()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .path("id");
         Assertions.assertEquals(receivedId, id);
@@ -135,7 +141,7 @@ public class DeliveryTest {
                 .log()
                 .all()
                 .assertThat()
-                .statusCode(200)
+                .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response()
                 .asString();
@@ -158,11 +164,22 @@ public class DeliveryTest {
                 .extract()
                 .as(OrderRealDto[].class);
 
-       for(int i =0; i < orderRealDtoArray.length; i ++){
-          // System.out.println(orderRealDtoArray[i].getId());
-           deleteOrderById(orderRealDtoArray[i].getId());
-       }
-        System.out.println();
+        for (int i = 0; i < orderRealDtoArray.length; i++) {
+            // System.out.println(orderRealDtoArray[i].getId());
+            deleteOrderById(orderRealDtoArray[i].getId());
+        }
+        OrderRealDto[] orderRealDtoArrayDeleted = given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .log()
+                .all()
+                .get("/orders")
+                .then()
+                .log()
+                .all()
+                .extract()
+                .as(OrderRealDto[].class);
+        Assertions.assertEquals(0, orderRealDtoArrayDeleted.length);
     }
 
     public int orderCreationPrecondition() {
@@ -204,8 +221,112 @@ public class DeliveryTest {
 
 
     }
-    @Test
-    public void deleteOrder(){
-        deleteOrderById(2778);
+
+    public Response executeGetMethodByStudent(String path) {
+        Response response = given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .log()
+                .all()
+                .get(path)
+                .then()
+                .log()
+                .all()
+                .extract()
+                .response();
+        return response;
+
     }
+
+    public Response executePutMethodByStudent(String path) {
+        Response response = given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .log()
+                .all()
+                .put(path)
+                .then()
+                .log()
+                .all()
+                .extract()
+                .response();
+        return response;
+
+    }
+
+    @Test
+    public void deleteOrder() {
+
+        int orderId = orderCreationPrecondition();
+       deleteOrderById(orderId);
+        given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .log()
+                .all()
+                .get("/orders" + "/" + orderId)
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK);
+    }
+
+    @Test
+    public void courierOrderAvailabilityForbiddenStudent() {
+       Response response = executeGetMethodByStudent("/orders/available");
+        Assertions.assertEquals(response.statusCode(), HttpStatus.SC_FORBIDDEN);
+
+
+    }
+
+    @Test
+    public void courierOrderAssignForbiddenStudent() {
+        int orderId = orderCreationPrecondition();
+       Response response = executePutMethodByStudent(String.format("/orders/%s/assign", orderId));
+        Assertions.assertEquals(response.statusCode(), HttpStatus.SC_FORBIDDEN);
+    }
+
+    @Test
+    public void createCourier() {
+        Response response = CourierCreation();
+        Assertions.assertEquals(response.statusCode(), HttpStatus.SC_OK);
+
+
+    }
+
+    public Response CourierCreation() {
+        String courierName = generateRandomName();
+        String courierPassword = generateRandomPassword();
+        String courierLogin = generateRandomLogin();
+        CourierCreationDto courierBody = new CourierCreationDto(courierLogin, courierPassword, courierName);
+        Gson gson = new Gson();
+        Response response = given()
+                .header("Content-type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .body(gson.toJson(courierBody))
+                .log()
+                .all()
+                .post("/users/courier")
+                .then()
+                .log()
+                .all()
+                .extract().response();
+        return response;
+
+    }
+
+    public String generateRandomName() {
+        return RandomStringUtils.random(10, true, false);
+
+    }
+
+    public String generateRandomPassword() {
+        return RandomStringUtils.random(10, true, true);
+    }
+
+    public String generateRandomLogin() {
+        return RandomStringUtils.random(8, true, false);
+    }
+
 }
