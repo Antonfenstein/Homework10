@@ -20,3 +20,26 @@ Number     |                 Checkname                  | Status |
 |    2     |  Placed order id returns status "Placed"   | passed |
 |    3     | Non-existing order id returns SC_NOT_FOUND | passed |
 |    4     |   Completed orders return completed=true   | passed |
+
+
+
+| Number |                                      Checkname                                      | Status |
+|:------:|:-----------------------------------------------------------------------------------:|:------:|
+|   1    |                 It's possible to login with correct login/password                  | passed |
+|   2    |        Sign in button is active then fields login and password are filled in        | passed |
+|   3    |                        Login field has the grey mask "login"                        | passed |
+|   4    |                     Password field has the grey mask "password"                     | passed |
+|   5    |                       Symbols in password field has the mask                        | passed |
+|   6    |      If the login field has less than 2 symbols there is a notification below       | passed |
+|   7    |       If the password field has less than 8 symbols there is a notification below   | passed |
+|   8    |       Incorrect credentials login causes the "Incorrect credentials" message        | passed |
+
+
+| Number |        Element        |                            Xpath                             |
+|:------:|:---------------------:|:------------------------------------------------------------:|
+|   1    |      Login field      |             //input[@data-name="username-input"]             |
+|   2    |    Password field     |             //input[@data-name="password-input"]             |
+|   3    |     Signin button     |             //button[@data-name="signIn-button"]             |
+|   4    |   Span input error    |          //span[@data-name="username-input-error"]           |
+|   5    | Incorrect credentials |         //div[@data-name="authorizationError-popup"]         |
+|   6    |  Popup close button   | //button[@data-name="authorizationError-popup-close-button"] |
