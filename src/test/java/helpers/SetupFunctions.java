@@ -2,6 +2,7 @@ package helpers;
 
 import com.google.gson.Gson;
 import dto.Credentials;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,16 +13,46 @@ import static io.restassured.RestAssured.given;
 
 public class SetupFunctions {
     String baseUrl;
-    String username;
+    String login;
     String password;
+    String dbhost;
+    String dbname;
+    String dbport;
+    String dbusername;
+    String dbpassword;
+
+    public String getDbhost() {
+        return dbhost;
+    }
+
+    public String getDbname() {
+        return dbname;
+    }
+
+    public String getDbport() {
+        return dbport;
+    }
+
+    public String getDbusername() {
+        return dbusername;
+    }
+
+    public String getDbpassword() {
+        return dbpassword;
+    }
 
     public SetupFunctions() {
         try (InputStream input = new FileInputStream("settings.properties")) {
             Properties properties = new Properties();
             properties.load(input);
             baseUrl = properties.getProperty("baseUrl");
-            username = properties.getProperty("username");
+            login = properties.getProperty("login");
             password = properties.getProperty("password");
+            dbhost = properties.getProperty("dbhost");
+            dbname = properties.getProperty("dbname");
+            dbpassword = properties.getProperty("dbpassword");
+            dbport = properties.getProperty("dbport");
+            dbusername = properties.getProperty("dbusername");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -31,18 +62,20 @@ public class SetupFunctions {
         return baseUrl;
     }
 
-    public String getUsername() {
-        return username;
+    public String getLogin() {
+        return login;
     }
 
     public String getPassword() {
         return password;
     }
+
     public String createUser() {
-        Credentials credentials = new Credentials(username, password);
+        Credentials credentials = new Credentials(login, password);
         Gson gson = new Gson();
         return gson.toJson(credentials);
     }
+
     public String getToken() {
 
         return given().
@@ -51,12 +84,22 @@ public class SetupFunctions {
                 all().
                 body(createUser()).
                 when().
-                post(  baseUrl + "/login/student").
+                post(baseUrl + "/login/student").
                 then().
                 log().
                 all().
                 extract().
                 response().
                 asString();
+    }
+
+    public String generateRandomName() {
+        return RandomStringUtils.random(8, true, false);
+
+    }
+
+    public String generateRandomPassword() {
+        return RandomStringUtils.random(10, true, true);
+
     }
 }
